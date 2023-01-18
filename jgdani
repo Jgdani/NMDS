@@ -1,0 +1,38 @@
+############### NMDS ##################
+Script NMDS #
+
+install.packages("vegan") # instalar pacote vegan
+library(vegan)
+library(car)
+library(ggplot2)
+
+data<-read.csv("C:/Users/Julia/Documents/analises_sisyrinchium/cluster/dadosvagnmds3.csv" , sep=",", dec=",")
+
+com = data[,2:ncol(data)]
+m_com = as.matrix(com)
+
+(nmds <- metaMDS(m_com, distance="euclidean" , k=3))
+plot(nmds, type="t")
+
+data.scores = as.data.frame(scores(nmds)$sites)
+
+data.scores$Specie = data$Specie
+head(data.scores)
+
+
+xx = ggplot(data.scores, aes(x = NMDS1, y = NMDS2)) + 
+  geom_point(size = 4, aes( colour = Specie, shape = Specie))+ 
+  theme(axis.text.y = element_text(colour = "black", size = 12, face = "bold"), 
+        axis.text.x = element_text(colour = "black", face = "bold", size = 12), 
+        legend.text = element_text(size = 12, face ="bold", colour ="black"), 
+        legend.position = "right", axis.title.y = element_text(face = "bold", size = 14), 
+        axis.title.x = element_text(face = "bold", size = 14, colour = "black"), 
+        legend.title = element_text(size = 14, colour = "black", face = "bold"), 
+        panel.background = element_blank(), panel.border = element_rect(colour = "black", fill = NA, size = 1.2),
+        legend.key=element_blank()) + 
+  labs(x = "NMDS1", colour = "Specie", y = "NMDS2", shape = "Specie")  + 
+  scale_colour_manual(values = c('#7B1B37','#21570E','#1D4940','#E5A411','#E17AA2', '#E3A61D')) 
+
+xx
+
+ggsave("NMDS.svg")
